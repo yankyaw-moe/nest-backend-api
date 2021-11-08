@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Put } from '@nestjs/common';
+import { Controller, Get, Param, ParseUUIDPipe, Put } from '@nestjs/common';
 import { FindStudentResponseDto, StudentResponseDto } from 'src/student/dto/student.dto';
 import { StudentService } from 'src/student/student.service';
 
@@ -9,15 +9,15 @@ export class StudentTeacherController {
 
     @Get()
     getStudents(
-        @Param('teacherId') teacherId: string
+        @Param('teacherId', new ParseUUIDPipe()) teacherId: string
     ): FindStudentResponseDto[] {
         return this.studentService.getStudentsByTeacherId(teacherId);
     }
 
     @Put('/:studentId')
     updateStudentTeacher(
-        @Param('teacherId') teacherId: string,
-        @Param('studentId') studentId: string
+        @Param('teacherId', new ParseUUIDPipe()) teacherId: string,
+        @Param('studentId', new ParseUUIDPipe()) studentId: string
     ): StudentResponseDto {
         return this.studentService.updateStudentTeacher(teacherId, studentId);
     }
