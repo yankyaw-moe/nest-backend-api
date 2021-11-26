@@ -3,10 +3,15 @@ import { UsersModule } from 'src/users/users.module';
 import { AuthService } from './auth.service';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './local.strategy';
-import { SessionSerializer } from './session.serializer';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
-  providers: [AuthService, LocalStrategy, SessionSerializer],
-  imports: [UsersModule, PassportModule.register({session:true})]
+  imports: [UsersModule, PassportModule, JwtModule.register({
+    secret: 'secretKey',
+    signOptions: { expiresIn: '3600s' },
+  })],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
+  exports: [AuthService],
 })
 export class AuthModule { }
