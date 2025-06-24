@@ -8,10 +8,10 @@ import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppDataSource } from './data-source';
 import { LoggerModule } from 'nestjs-pino';
 import useBullFactory from './config/bull/bull.factory';
 import useDatabaseFactory from './config/database/database.factory';
+import useLoggerFactory from './config/logger/logger.factory';
 
 @Module({
   imports: [
@@ -19,17 +19,8 @@ import useDatabaseFactory from './config/database/database.factory';
       isGlobal: true,
       load: [envConfiguration],
     }),
-    LoggerModule.forRoot({
-      pinoHttp: {
-        transport: {
-          target: 'pino-pretty',
-          options: {
-            colorize: true,
-            translateTime: 'SYS:standard', // Format the timestamp.
-            ignore: 'pid,hostname', // Ignore these fields from the log output.
-          },
-        },
-      },
+    LoggerModule.forRootAsync({
+      useFactory: useLoggerFactory,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
