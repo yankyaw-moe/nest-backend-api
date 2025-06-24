@@ -11,6 +11,7 @@ const useDatabaseFactory = async (
   password: configService.get('DB_PASSWORD', { infer: true }),
   database: configService.get('DB_NAME', { infer: true }),
   entities: ['dist/**/*.entity{.ts,.js}'],
+  migrations: ['dist/migrations/*{.ts,.js}'],
   synchronize: configService.get('NODE_ENV', { infer: true }) !== 'production',
 });
 
