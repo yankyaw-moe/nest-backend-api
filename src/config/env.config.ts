@@ -1,5 +1,5 @@
 export const envConfiguration = () => ({
-  port: parseInt(process.env.PORT as string, 10) || 3000,
+  port: parseInt(process.env.PORT as string, 10) || 4000,
   database: {
     type: 'postgres',
     host: process.env.DB_HOST || 'localhost',

@@ -11,6 +11,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppDataSource } from './data-source';
 import { LoggerModule } from 'nestjs-pino';
 import useBullFactory from './config/bull/bull.factory';
+import useDatabaseFactory from './config/database/database.factory';
 
 @Module({
   imports: [
@@ -30,14 +31,11 @@ import useBullFactory from './config/bull/bull.factory';
         },
       },
     }),
-    // TypeOrmModule.forRootAsync({
-    //   imports: [ConfigModule],
-    //   useFactory: (configService: ConfigService) => ({
-    //     ...configService.get('database'),
-    //   }),
-    //   inject: [ConfigService],
-    // }),
-    TypeOrmModule.forRoot(AppDataSource.options),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: useDatabaseFactory,
+    }),
     BullModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
