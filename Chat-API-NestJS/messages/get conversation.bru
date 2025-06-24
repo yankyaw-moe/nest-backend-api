@@ -1,0 +1,20 @@
+meta {
+  name: get conversation
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:3000/messages/conversation/db2d822d-5f2e-4964-8bdc-892adfcc1be7?page=1&limit=10
+  body: json
+  auth: bearer
+}
+
+params:query {
+  page: 1
+  limit: 10
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imx1Y2FzIiwic3ViIjoiZGIyZDgyMmQtNWYyZS00OTY0LThiZGMtODkyYWRmY2MxYmU3IiwiaWF0IjoxNzQyODA0NDI4LCJleHAiOjE3NDM0MDkyMjh9.abxzK_yoM7ghsz9oHWUUzhVF8ih3JYS9UVOP52IZMMU
+}

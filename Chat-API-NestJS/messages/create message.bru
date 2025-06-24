@@ -1,0 +1,22 @@
+meta {
+  name: create message
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/messages
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imx1Y2FzIiwic3ViIjoiZGIyZDgyMmQtNWYyZS00OTY0LThiZGMtODkyYWRmY2MxYmU3IiwiaWF0IjoxNzQwODM3NDI5LCJleHAiOjE3NDE0NDIyMjl9.InZiG7BrLcdrPHv1U69NI-_4vB_h2vtkuY52UQkZM0w
+}
+
+body:json {
+  {
+    "content": "Hello",
+    "receiverId": "9cddc566-7876-4b51-91b0-164f43d6bacd"
+  }
+}

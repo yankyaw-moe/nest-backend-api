@@ -1,0 +1,15 @@
+meta {
+  name: delivered
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:3000/messages/db2d822d-5f2e-4964-8bdc-892adfcc1be7/delivered
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imx1Y2FzIiwic3ViIjoiZGIyZDgyMmQtNWYyZS00OTY0LThiZGMtODkyYWRmY2MxYmU3IiwiaWF0IjoxNzQwODM3NDI5LCJleHAiOjE3NDE0NDIyMjl9.InZiG7BrLcdrPHv1U69NI-_4vB_h2vtkuY52UQkZM0w
+}
