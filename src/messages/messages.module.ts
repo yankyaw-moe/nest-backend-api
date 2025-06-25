@@ -11,16 +11,15 @@ import { MessagesConsumer } from './messages.consumer';
 import { MessagesListener } from './messages.listener';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Message } from './entities/message.entity';
+import useJwtFactory from 'src/config/jwt/jwt.factory';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Message]),
     JwtModule.registerAsync({
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get('jwt.secret'),
-        signOptions: { expiresIn: configService.get('jwt.expiresIn') },
-      }),
+      imports: [ConfigModule],
       inject: [ConfigService],
+      useFactory: useJwtFactory,
     }),
     UsersModule,
     ConfigModule,
