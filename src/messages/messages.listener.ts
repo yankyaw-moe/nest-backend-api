@@ -31,7 +31,7 @@ export class MessagesListener implements OnModuleInit {
       console.log('Connected to RabbitMQ');
     } catch (error) {
       console.error('Error connecting to RabbitMQ:', error);
-      throw error;
+      // throw error; // comment out to monitor queue close error
     }
   }
 
