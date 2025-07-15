@@ -42,6 +42,10 @@ export class ListingService {
     limit = 10,
     search = '',
     category?: string,
+    sortField: 'createdAt' | 'title' | 'price' = 'createdAt',
+    sortOrder: 'ASC' | 'DESC' = 'DESC',
+    createdFrom?: string,
+    createdTo?: string,
   ): Promise<{
     data: Listing[];
     total: number;
@@ -63,7 +67,20 @@ export class ListingService {
       );
     }
 
-    qb.orderBy('listing.createdAt', 'DESC')
+    if (createdFrom) {
+      qb.andWhere('listing.createdAt >= :createdFrom', { createdFrom });
+    }
+    if (createdTo) {
+      qb.andWhere('listing.createdAt <= :createdTo', { createdTo });
+    }
+
+    // Validate sortField
+    const allowedSortFields = ['createdAt', 'title', 'price'];
+    const sortBy = allowedSortFields.includes(sortField)
+      ? sortField
+      : 'createdAt';
+    const orderBy = sortOrder === 'ASC' ? 'ASC' : 'DESC';
+    qb.orderBy(`listing.${sortBy}`, orderBy)
       .skip((page - 1) * limit)
       .take(limit);
 

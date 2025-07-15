@@ -38,8 +38,22 @@ export class ListingController {
     @Query('limit') limit = 10,
     @Query('search') search = '',
     @Query('category') category?: string,
+    @Query('sortField')
+    sortField: 'createdAt' | 'title' | 'price' = 'createdAt',
+    @Query('sortOrder') sortOrder: 'ASC' | 'DESC' = 'DESC',
+    @Query('createdFrom') createdFrom?: string,
+    @Query('createdTo') createdTo?: string,
   ) {
-    return this.service.findAll(Number(page), Number(limit), search, category);
+    return this.service.findAll(
+      Number(page),
+      Number(limit),
+      search,
+      category,
+      sortField,
+      sortOrder,
+      createdFrom,
+      createdTo,
+    );
   }
 
   @Get(':id')
