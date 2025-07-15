@@ -12,6 +12,7 @@ import { LoggerModule } from 'nestjs-pino';
 import useBullFactory from './config/bull/bull.factory';
 import useDatabaseFactory from './config/database/database.factory';
 import useLoggerFactory from './config/logger/logger.factory';
+import { ListingModule } from './listing/listing.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import useLoggerFactory from './config/logger/logger.factory';
     UsersModule,
     MessagesModule,
     AuthModule,
+    ListingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

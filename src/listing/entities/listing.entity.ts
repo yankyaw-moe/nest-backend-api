@@ -4,14 +4,16 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 
 @Entity('listing')
+@Index(['title', 'deletedAt'], { unique: true })
 export class Listing {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column()
   title: string;
 
   @Column()
@@ -28,6 +30,9 @@ export class Listing {
 
   @Column()
   phone: string;
+
+  @Column({ nullable: true })
+  deletedAt?: Date;
 
   @CreateDateColumn()
   createdAt: Date;
