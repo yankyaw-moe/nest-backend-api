@@ -5,8 +5,8 @@ const useBullFactory = async (
   configService: ConfigService,
 ): Promise<BullRootModuleOptions> => ({
   redis: {
-    host: configService.get('redis.host', { infer: true }),
-    port: configService.get('redis.port', { infer: true }),
+    host: configService.get('redis.host'),
+    port: configService.get('redis.port'),
   },
 });
 

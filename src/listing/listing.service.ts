@@ -95,4 +95,61 @@ export class ListingService {
       where: { id, deletedAt: IsNull() },
     });
   }
+
+  async getReportData(
+    page: number,
+    limit: number,
+    search: string,
+    category?: string,
+    sortField?: string,
+    sortOrder?: string,
+    createdFrom?: string,
+    createdTo?: string,
+  ): Promise<{ data: Partial<Listing>[] }> {
+    const pageNum = page ? Number(page) : 1;
+    const limitNum = limit ? Number(limit) : 1000;
+    const searchStr = search || '';
+    const allowedSortFields = ['createdAt', 'title', 'price'];
+    const sortFieldValue = sortField ?? 'createdAt';
+    const sortBy = allowedSortFields.includes(sortFieldValue)
+      ? sortFieldValue
+      : 'createdAt';
+    const orderBy = sortOrder === 'ASC' ? 'ASC' : 'DESC';
+
+    const qb = this.listingRepo
+      .createQueryBuilder('listing')
+      .select([
+        'listing.id',
+        'listing.title',
+        'listing.category',
+        'listing.description',
+        'listing.price',
+        'listing.location',
+        'listing.phone',
+        'listing.createdAt',
+      ])
+      .where('listing.deletedAt IS NULL');
+
+    if (category) {
+      qb.andWhere('listing.category = :category', { category });
+    }
+    if (searchStr) {
+      qb.andWhere(
+        'listing.title LIKE :search OR listing.category LIKE :search OR listing.description LIKE :search OR listing.location LIKE :search OR listing.phone LIKE :search',
+        { search: `%${searchStr}%` },
+      );
+    }
+    if (createdFrom) {
+      qb.andWhere('listing.createdAt >= :createdFrom', { createdFrom });
+    }
+    if (createdTo) {
+      qb.andWhere('listing.createdAt <= :createdTo', { createdTo });
+    }
+    qb.orderBy(`listing.${sortBy}`, orderBy)
+      .skip((pageNum - 1) * limitNum)
+      .take(limitNum);
+
+    const data = await qb.getRawMany();
+    return { data };
+  }
 }
