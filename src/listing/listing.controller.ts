@@ -8,34 +8,43 @@ import {
   Body,
   Query,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { ListingService } from './listing.service';
 import { CreateListingDto } from './dto/create-listing.dto';
 import { UpdateListingDto } from './dto/update-listing.dto';
 import { Response } from 'express';
 import * as fastcsv from 'fast-csv';
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
 @Controller('listing')
+@UseGuards(JwtGuard, RolesGuard) // Protect all routes with JWT and RolesGuard
 export class ListingController {
   constructor(private readonly service: ListingService) {}
 
   @Post()
+  @Roles('admin')
   async create(@Body() dto: CreateListingDto) {
     return this.service.create(dto);
   }
 
   @Put(':id')
+  @Roles('admin')
   async update(@Param('id') id: string, @Body() dto: UpdateListingDto) {
     return this.service.update(id, dto);
   }
 
   @Delete(':id')
+  @Roles('admin')
   async delete(@Param('id') id: string) {
     await this.service.softDelete(id);
     return { success: true };
   }
 
   @Get()
+  @Roles('admin', 'user')
   async findAll(
     @Query('page') page = 1,
     @Query('limit') limit = 10,
@@ -60,6 +69,7 @@ export class ListingController {
   }
 
   @Get('report')
+  @Roles('admin', 'user')
   async report(
     @Res() res: Response,
     @Query('page') page: number,
@@ -120,6 +130,7 @@ export class ListingController {
   }
 
   @Get(':id')
+  @Roles('admin', 'user')
   async findOne(@Param('id') id: string) {
     return this.service.findOne(id);
   }

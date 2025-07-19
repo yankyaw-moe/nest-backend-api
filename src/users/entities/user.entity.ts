@@ -1,3 +1,7 @@
+export enum Role {
+  Admin = 'admin',
+  User = 'user',
+}
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -19,6 +23,13 @@ export class User {
 
   @Column({ default: false })
   isOnline: boolean;
+
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.User,
+  })
+  role: Role;
 
   @CreateDateColumn()
   createdAt: Date;
