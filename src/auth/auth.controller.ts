@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -14,6 +13,7 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MailService } from 'src/shared/mail/mail.service';
+import { LoginDto } from './dto/login.dto';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -38,9 +38,9 @@ export class AuthController {
   @ApiOperation({ summary: 'User login' })
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async login(@Body() loginDto: CreateUserDto) {
+  async login(@Body() loginDto: LoginDto) {
     const user = await this.authService.validateUser(
-      loginDto.username,
+      loginDto.email,
       loginDto.password,
     );
     if (!user) {

@@ -12,8 +12,8 @@ export class AuthService {
     private readonly logger: Logger, // Inject the Logger service from nestjs-pino
   ) {}
 
-  async validateUser(username: string, password: string): Promise<any> {
-    const user = await this.usersService.findByUsername(username);
+  async validateUser(email: string, password: string): Promise<any> {
+    const user = await this.usersService.findByEmail(email);
     if (user && (await bcrypt.compare(password, user.password))) {
       const { password, ...result } = user;
       return result;
@@ -23,10 +23,10 @@ export class AuthService {
 
   async login(user: any) {
     this.logger.log('user login >>>', user);
-    const payload = { username: user.username, sub: user.id, role: user.role };
+    const payload = { email: user.email, sub: user.id, role: user.role };
     return {
       accessToken: this.jwtService.sign(payload),
-      user: { id: user.id, username: user.username, role: user.role },
+      user: { id: user.id, email: user.email, name: user.name, role: user.role },
     };
   }
 }
