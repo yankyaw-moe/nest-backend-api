@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import * as bcrypt from 'bcryptjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
@@ -21,10 +20,10 @@ export class UsersService {
       throw new ConflictException('Email already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     const user = this.usersRepository.create({
-      ...createUserDto,
-      password: hashedPassword,
+      email: createUserDto.email,
+      name: createUserDto.name,
+      password: 'supabase-managed',
     });
 
     const { password, ...result } = await this.usersRepository.save(user);
@@ -35,8 +34,13 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { email } });
   }
 
-  async findByUsername(username: string) {
-    return this.usersRepository.findOne({ where: { username } });
+  async findBySupabaseId(supabaseId: string) {
+    return this.usersRepository.findOne({ where: { id: supabaseId } });
+  }
+
+  async updateUser(id: string, updates: Partial<User>) {
+    await this.usersRepository.update(id, updates);
+    return this.findById(id);
   }
 
   async updateOnlineStatus(userId: string, isOnline: boolean): Promise<void> {

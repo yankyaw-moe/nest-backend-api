@@ -6,21 +6,22 @@ import {
   HttpException,
   HttpStatus,
   Post,
+  Req,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MailService } from 'src/shared/mail/mail.service';
 import { LoginDto } from './dto/login.dto';
+import { SignUpDto } from './dto/sign-up.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private usersService: UsersService,
     private mailService: MailService,
   ) {}
 
@@ -28,9 +29,12 @@ export class AuthController {
   @ApiOperation({ summary: 'Register new user' })
   @ApiResponse({ status: 201, description: 'User successfully registered' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
-  async register(@Body() createUserDto: CreateUserDto) {
-    const user = await this.usersService.create(createUserDto);
-    return this.authService.login(user);
+  async register(@Body() signUpDto: SignUpDto) {
+    return this.authService.signUp(
+      signUpDto.email,
+      signUpDto.password,
+      signUpDto.name,
+    );
   }
 
   @Post('login')
@@ -39,14 +43,34 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async login(@Body() loginDto: LoginDto) {
-    const user = await this.authService.validateUser(
-      loginDto.email,
-      loginDto.password,
-    );
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-    return this.authService.login(user);
+    return this.authService.signIn(loginDto.email, loginDto.password);
+  }
+
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Refresh access token' })
+  @ApiResponse({ status: 200, description: 'Token refreshed successfully' })
+  async refreshToken(@Body('refreshToken') refreshToken: string) {
+    return this.authService.refreshToken(refreshToken);
+  }
+
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'User logout' })
+  @ApiResponse({ status: 200, description: 'Logged out successfully' })
+  async logout(@Req() req: any) {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    return this.authService.signOut(token);
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get current user' })
+  @ApiResponse({ status: 200, description: 'User information retrieved' })
+  async getCurrentUser(@Req() req: any) {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    return this.authService.getUser(token);
   }
 
   @Get('send-mail')
