@@ -13,6 +13,7 @@ import useBullFactory from './config/bull/bull.factory';
 import useDatabaseFactory from './config/database/database.factory';
 import useLoggerFactory from './config/logger/logger.factory';
 import { ListingModule } from './listing/listing.module';
+import { WalletModule } from './wallet/wallet.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { ListingModule } from './listing/listing.module';
     MessagesModule,
     AuthModule,
     ListingModule,
+    WalletModule,
   ],
   controllers: [AppController],
   providers: [AppService],
