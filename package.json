@@ -33,7 +33,6 @@
     "@nestjs/swagger": "^11.0.6",
     "@nestjs/typeorm": "^11.0.0",
     "@nestjs/websockets": "^11.0.10",
-    "@supabase/supabase-js": "^2.52.1",
     "@types/passport-jwt": "^4.0.1",
     "@types/uuid": "^10.0.0",
     "amqp-connection-manager": "^4.1.14",
