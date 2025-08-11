@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class DepositDto {
@@ -12,7 +18,7 @@ export class DepositDto {
   @IsString()
   description?: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  reference?: string;
+  reference: string; // Make reference required for idempotency
 }

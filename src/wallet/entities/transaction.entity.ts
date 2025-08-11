@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   ManyToOne,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { Wallet } from './wallet.entity';
 
@@ -21,6 +22,7 @@ export enum TransactionStatus {
 }
 
 @Entity('transactions')
+@Index(['reference', 'walletId'], { unique: true }) // Add unique constraint for idempotency
 export class Transaction {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -44,8 +46,8 @@ export class Transaction {
   @Column({ nullable: true })
   description: string;
 
-  @Column({ nullable: true })
-  reference: string;
+  @Column()
+  reference: string; // Make reference required
 
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   balanceAfter: number;

@@ -47,10 +47,38 @@ export class WalletService {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-
+  
     try {
       const wallet = await this.getOrCreateWallet(userId);
-
+  
+      // Check for existing transaction with the same reference (idempotency check)
+      const existingTransaction = await this.transactionRepository.findOne({
+        where: {
+          reference: depositDto.reference,
+          walletId: wallet.id,
+          type: TransactionType.DEPOSIT,
+        },
+      });
+  
+      if (existingTransaction) {
+        // Return the existing transaction result (idempotent response)
+        return {
+          message: 'Deposit already processed',
+          transaction: {
+            id: existingTransaction.id,
+            type: existingTransaction.type,
+            amount: existingTransaction.amount,
+            status: existingTransaction.status,
+            balanceAfter: existingTransaction.balanceAfter,
+            createdAt: existingTransaction.createdAt,
+          },
+          wallet: {
+            balance: wallet.balance,
+            totalDeposited: wallet.totalDeposited,
+          },
+        };
+      }
+  
       // Create transaction record
       const transaction = this.transactionRepository.create({
         type: TransactionType.DEPOSIT,
@@ -60,26 +88,26 @@ export class WalletService {
         reference: depositDto.reference,
         walletId: wallet.id,
       });
-
+  
       const savedTransaction = await queryRunner.manager.save(transaction);
-
+  
       // Update wallet balance
       const newBalance = Number(wallet.balance) + Number(depositDto.amount);
       const newTotalDeposited = Number(wallet.totalDeposited) + Number(depositDto.amount);
-
+  
       await queryRunner.manager.update(Wallet, wallet.id, {
         balance: newBalance,
         totalDeposited: newTotalDeposited,
       });
-
+  
       // Update transaction with new balance and mark as completed
       await queryRunner.manager.update(Transaction, savedTransaction.id, {
         balanceAfter: newBalance,
         status: TransactionStatus.COMPLETED,
       });
-
+  
       await queryRunner.commitTransaction();
-
+  
       return {
         message: 'Deposit successful',
         transaction: {
@@ -98,6 +126,12 @@ export class WalletService {
     } catch (error) {
       await queryRunner.rollbackTransaction();
       this.logger.error('Deposit failed:', error);
+      
+      // Handle duplicate key error specifically
+      if (error.code === '23505') { // PostgreSQL unique violation
+        throw new BadRequestException('Duplicate transaction reference');
+      }
+      
       throw new InternalServerErrorException('Deposit failed');
     } finally {
       await queryRunner.release();

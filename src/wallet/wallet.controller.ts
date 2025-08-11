@@ -11,7 +11,7 @@ import { WalletService } from './wallet.service';
 import { DepositDto } from './dto/deposit.dto';
 import { WithdrawDto } from './dto/withdraw.dto';
 import { TransactionQueryDto } from './dto/transaction-query.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../users/entities/user.entity';
@@ -24,7 +24,7 @@ import {
 
 @ApiTags('wallet')
 @Controller('wallet')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtGuard, RolesGuard)
 @ApiBearerAuth()
 export class WalletController {
   constructor(private readonly walletService: WalletService) {}

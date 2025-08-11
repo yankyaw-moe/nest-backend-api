@@ -4,10 +4,9 @@ import { WalletService } from './wallet.service';
 import { WalletController } from './wallet.controller';
 import { Wallet } from './entities/wallet.entity';
 import { Transaction } from './entities/transaction.entity';
-import { SupabaseModule } from '../supabase/supabase.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Wallet, Transaction]), SupabaseModule],
+  imports: [TypeOrmModule.forFeature([Wallet, Transaction])],
   controllers: [WalletController],
   providers: [WalletService],
   exports: [WalletService],
